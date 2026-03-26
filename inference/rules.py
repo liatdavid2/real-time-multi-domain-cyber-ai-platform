@@ -1,0 +1,65 @@
+from rules_loader import load_all_rules
+
+
+def _num(v):
+    try:
+        return float(v)
+    except:
+        return None
+
+
+def check_condition(value, op, target):
+    if value is None:
+        return False
+
+    if op == ">":
+        return value > target
+    if op == "<":
+        return value < target
+    if op == ">=":
+        return value >= target
+    if op == "<=":
+        return value <= target
+    if op == "==":
+        return value == target
+
+    return False
+
+
+def evaluate_rules(flow):
+    rules = load_all_rules()
+
+    matched_rules = []
+    attack_types = []
+    reasons = []
+    actions = []
+    explanations = []
+
+    for rule in rules:
+        results = []
+
+        for cond in rule["conditions"]:
+            raw_value = flow.get(cond["field"], None)
+            value = _num(raw_value)
+            result = check_condition(value, cond["op"], cond["value"])
+            results.append(result)
+
+        if rule.get("logic", "AND") == "AND":
+            triggered = all(results)
+        else:
+            triggered = any(results)
+
+        if triggered:
+            matched_rules.append(rule["name"])
+            attack_types.append(rule["name"])
+            reasons.append(rule["description"])
+            explanations.append(rule.get("explanation", ""))
+            actions.append(rule.get("action", "ALERT"))
+
+    return {
+        "matched_rules": matched_rules,
+        "attack_hypothesis": list(set(attack_types)),
+        "reasons": reasons,
+        "explanations": explanations,
+        "rule_actions": actions
+    }

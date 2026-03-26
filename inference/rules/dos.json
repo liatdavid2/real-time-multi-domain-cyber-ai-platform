@@ -1,0 +1,14 @@
+{
+  "name": "DoS",
+  "description": "High traffic rate that may overload the system.",
+  "explanation": "This rule is used to detect Denial of Service behavior. It looks for very high packet volume, high traffic load, and very short time between packets. Together, these signals may indicate an attempt to flood the target and reduce its availability.",
+  "severity": "high",
+  "action": "BLOCK",
+  "enabled": true,
+  "logic": "AND",
+  "conditions": [
+    { "field": "spkts", "op": ">", "value": 80 },
+    { "field": "sload", "op": ">", "value": 50000 },
+    { "field": "sintpkt", "op": "<", "value": 0.01 }
+  ]
+}
