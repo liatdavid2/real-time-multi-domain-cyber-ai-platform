@@ -9,12 +9,14 @@ services:
     build:
       context: ../training
     container_name: training
+    command: python networks/train.py  
     volumes:
       - ../output:/app/output
       - ../models:/app/models
       - ../mlruns:/mlruns
     depends_on:
       - spark
+      - mlflow
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
