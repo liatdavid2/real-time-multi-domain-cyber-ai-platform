@@ -29,6 +29,8 @@ from networks.features import build_features
 from networks.utils import make_model_version_path
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import precision_recall_curve
+import warnings
+warnings.filterwarnings("ignore", message=".*mlflow.*")
 
 MODEL_NAME = "networks_classification_model"
 
