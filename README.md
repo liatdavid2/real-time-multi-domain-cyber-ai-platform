@@ -10,6 +10,17 @@ This project is a multi-domain machine learning platform for cybersecurity, desi
 The system supports modular training pipelines and allows selecting which domain to train using a unified interface.
 
 ---
+## System Demo
+
+### BOTH Training + MLflow Production Promotion
+
+This demo showcases a multi-domain training pipeline running in `both` mode.  
+It trains two independent models: one for network attacks classification and one for malware classification, each using its own data pipeline and feature engineering.
+
+At the end of the run, all experiments are logged to MLflow, and the best-performing model is automatically promoted to `Production`.
+
+[![Watch the demo](docs/images/multi-domain-train.png)](https://youtu.be/viFWanNg0rY)
+---
 
 ## Key Idea
 

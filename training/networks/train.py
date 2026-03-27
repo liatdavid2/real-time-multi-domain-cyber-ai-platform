@@ -30,7 +30,7 @@ from networks.utils import make_model_version_path
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import precision_recall_curve
 import warnings
-warnings.filterwarnings("ignore", message=".*mlflow.*")
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 MODEL_NAME = "networks_classification_model"
 
