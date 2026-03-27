@@ -11,14 +11,11 @@ explainer = None
 
 app = FastAPI(title="Intrusion Detection API")
 
-@app.on_event("startup")
-def startup_event():
-    print("[APP] Loading model at startup...")
-    load_model()
 
 @app.get("/")
 def root():
     return {"status": "ok"}
+
 
 @app.post("/predict")
 def explain(flow: FlowInput):

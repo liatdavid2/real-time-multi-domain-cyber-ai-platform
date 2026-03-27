@@ -96,10 +96,7 @@ services:
     volumes:
       - ../models:/app/models
       - ../mlruns:/mlruns 
-    depends_on:
-      - mlflow
     environment:
-      - ENV=local
       - MLFLOW_TRACKING_URI=http://mlflow:5000
 
 
