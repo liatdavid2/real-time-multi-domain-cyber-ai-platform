@@ -77,7 +77,7 @@ services:
       - "5000:5000"
     volumes:
       - ../mlruns:/mlruns
-      - ../mlflow_db:/mlflow_db   # 👈 חשוב
+      - ../mlflow_db:/mlflow_db 
     command: >
       mlflow server
       --backend-store-uri sqlite:////mlflow_db/mlflow.db
