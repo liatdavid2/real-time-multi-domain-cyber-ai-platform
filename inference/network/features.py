@@ -2,7 +2,7 @@ import json
 import os
 import pandas as pd
 from mlflow.tracking import MlflowClient
-from networks.model import load_model
+from network.model import load_model
 import numpy as np
 
 
