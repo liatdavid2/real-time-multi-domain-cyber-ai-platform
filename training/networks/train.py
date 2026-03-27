@@ -390,6 +390,27 @@ def main() -> None:
         # -----------------------------
         # Log params
         # -----------------------------
+
+        importance = base_model.feature_importances_
+
+        feat_imp = pd.DataFrame({
+            "feature": X_train.columns,
+            "importance": importance
+        }).sort_values("importance", ascending=False)
+
+        print("\nTop 10 Most Important Features (XGBoost - Networks):")
+        print("----------------------------------------------------")
+        print(feat_imp.head(10).to_string(index=False))
+
+        print("\nInterpretation:")
+        print("These features contributed the most to detecting anomalous network behavior.")
+        print("Higher importance indicates stronger influence on identifying malicious or abnormal traffic patterns.")
+
+        top_features = feat_imp.head(10)
+        mlflow.log_dict(
+            top_features.to_dict(orient="records"),
+            "feature_importance_top10.json"
+        )
         mlflow.log_param("calibration", "sigmoid")
         mlflow.log_param("calibration_split", 0.2)
         mlflow.log_param("threshold", threshold)
@@ -508,6 +529,7 @@ def main() -> None:
     print("mean:", y_prob.mean())
     print("=== METRICS ===")
     print(metrics)
+
 
     print(f"Saved model to: {output_path}")
 
