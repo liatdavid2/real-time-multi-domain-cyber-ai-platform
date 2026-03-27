@@ -18,6 +18,8 @@ This demo showcases a multi-domain training pipeline running in `both` mode.
 It trains two independent models: one for network attacks classification and one for malware classification, each using its own data pipeline and feature engineering.
 
 At the end of the run, all experiments are logged to MLflow, and the best-performing model is automatically promoted to `Production`.
+
+
 [![Watch](docs/images/training-both-demo.png)](https://youtu.be/viFWanNg0rY)
 ---
 
