@@ -280,7 +280,7 @@ def register_and_promote_model(
 
 def main() -> None:
     mlflow.set_tracking_uri("http://mlflow:5000")
-    mlflow.set_experiment("intrusion-detection")
+    mlflow.set_experiment(MODEL_NAME)
 
     partition = os.getenv("TRAIN_PARTITION")
 
