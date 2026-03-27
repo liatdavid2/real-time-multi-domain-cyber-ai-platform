@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # copy rest of the code
 COPY . .
 
-CMD ["python", "network/retrain_watcher.py"]
+CMD ["bash"]

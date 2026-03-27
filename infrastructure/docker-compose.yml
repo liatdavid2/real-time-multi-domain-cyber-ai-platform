@@ -9,7 +9,6 @@ services:
     build:
       context: ../training
     container_name: training
-    command: python networks/train.py  
     volumes:
       - ../output:/app/output
       - ../models:/app/models
