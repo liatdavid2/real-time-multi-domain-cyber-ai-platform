@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from mlflow.tracking import MlflowClient
 from model import load_model
-import np
+import numpy as np
 
 
 _client = MlflowClient()
