@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from schemas import FlowInput
-from features import build_features_from_json
-from model import load_model
-from rules import evaluate_rules
+from networks.schemas import FlowInput
+from networks.features import build_features_from_json
+from networks.model import load_model
+from networks.rules import evaluate_rules
 import pandas as pd
 import shap
 

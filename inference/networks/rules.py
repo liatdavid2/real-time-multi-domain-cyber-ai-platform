@@ -1,4 +1,4 @@
-from rules_loader import load_all_rules
+from networks.rules_loader import load_all_rules
 
 
 def _num(v):
