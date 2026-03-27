@@ -13,6 +13,7 @@ services:
       - ../output:/app/output
       - ../models:/app/models
       - ../mlruns:/mlruns
+      - ../data:/app/data
     depends_on:
       - spark
       - mlflow
