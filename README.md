@@ -31,8 +31,8 @@ This demo shows the REST API usage via Swagger UI, including `/malware/predict` 
 ---
 ### RAG Demo (Swagger UI)
 
-This demo shows `/network/predict` inference with RAG-based context validation.
-When the model detects an attack with high confidence but is uncertain about the type, it retrieves similar past flows to infer the attack pattern.
+This demo shows `/network/predict` inference with RAG validation.  
+For high-confidence detections with uncertain attack type, the system retrieves top-3 similar flows (k=3) to refine the attack hypothesis.
 
 [![Watch](docs/images/rag-demo.png)](https://youtu.be/P7qIM-kIeJI)
 
