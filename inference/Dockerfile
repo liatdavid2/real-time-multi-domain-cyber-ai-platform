@@ -1,14 +1,17 @@
+# syntax=docker/dockerfile:1
+
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# 1. copy ONLY requirements
+# copy only requirements
 COPY inference/requirements.txt .
 
-# 2. install deps (this will be cached)
-RUN pip install --no-cache-dir -r requirements.txt
+# install deps with cache
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt --prefer-binary
 
-# 3. copy code AFTER install
+# copy code AFTER install
 COPY inference /app
 COPY training /app/training
 

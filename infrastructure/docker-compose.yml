@@ -96,8 +96,12 @@ services:
     volumes:
       - ../models:/app/models
       - ../mlruns:/mlruns 
+      - ../data:/data  
+      - ~/.cache/huggingface:/root/.cache/huggingface
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
+    env_file:
+      - ../inference/.env
 
 
   monitoring:
