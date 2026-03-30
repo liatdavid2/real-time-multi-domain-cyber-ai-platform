@@ -491,6 +491,86 @@ Classifies a file as malware or benign using static PE features.
 ```
 ---
 
+## RAG - Seeding Vector Database (Pinecone)
+
+Before running the system, we populate the vector database with historical network flows.
+
+This step converts raw flows into embeddings and stores them in Pinecone for later retrieval (RAG).
+
+---
+
+### Dataset Distribution
+
+Example distribution (balanced subset):
+
+```text id="h7k2dp"
+fuzzers         50
+exploits        50
+reconnaissance  50
+normal          50
+generic         50
+dos             26
+analysis        11
+backdoor         8
+shellcode        5
+worms            2
+```
+
+---
+
+### ⚠️ Note on Dataset Size
+
+This demo uses a **small subset (~300 flows)** due to limited local resources (CPU / memory).
+
+However, the system is fully scalable:
+
+* Can easily handle **tens or hundreds of thousands of flows**
+* Simply increase the dataset size in `seed_pinecone.py`
+* Pinecone + embeddings pipeline remains unchanged
+
+---
+
+### Run Seeding
+
+```bash id="k3jv9s"
+docker compose run --rm inference python network/seed_pinecone.py
+```
+
+---
+
+### What happens
+
+```text id="n2xq4m"
+Load data → Encode (SentenceTransformer)
+         → Build embeddings (302 vectors)
+         → Upload to Pinecone
+```
+---
+
+### Example Output
+
+```text id="p9lq2t"
+Loaded 302 rows
+Encoding...
+Batches: 100% | 10/10
+Embeddings shape: 302
+Built 302 vectors
+Done seeding 302 flows into Pinecone
+```
+---
+
+### Why this step is required
+
+* Enables **RAG retrieval** of similar flows
+* Provides **historical context** for predictions
+* Allows detection of **known vs. novel attacks**
+
+---
+
+👉 This step must be completed before running inference with RAG.
+
+---
+
 ## RAG-Based Context Validation
 
 The system enriches ML predictions with a **Retrieval-Augmented Generation (RAG)** layer that retrieves similar historical flows and explains the decision.
