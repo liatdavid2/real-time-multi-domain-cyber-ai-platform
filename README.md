@@ -9,7 +9,9 @@ This project is a multi-domain machine learning platform for cybersecurity, desi
 
 The system supports modular training pipelines and allows selecting which domain to train using a unified interface.
 
-The system also integrates a Retrieval-Augmented Generation (RAG) layer using Pinecone as a vector database to provide contextual validation and explanation for model decisions.
+The system integrates a Retrieval-Augmented Generation (RAG) layer using Pinecone as a vector database, along with AI Agents orchestration (LangGraph), to provide contextual validation, reasoning, and explanation for model decisions.
+
+It enables detection of known vs. novel attacks by combining ML predictions with similarity-based reasoning over historical flows.
 
 ---
 ## System Demo
