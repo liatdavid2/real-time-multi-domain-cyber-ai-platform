@@ -21,6 +21,12 @@ At the end of the run, all experiments are logged to MLflow, and the best-perfor
 
 
 [![Watch](docs/images/training-both-demo.png)](https://youtu.be/viFWanNg0rY)
+
+### API Demo (Swagger UI)
+
+This demo shows the REST API usage via Swagger UI, including `/malware/predict` inference and real-time explanation with SHAP.
+
+[![Watch](docs/images/api-demo.png)](https://youtu.be/85oFoRoMe1c)
 ---
 
 ## Key Idea
