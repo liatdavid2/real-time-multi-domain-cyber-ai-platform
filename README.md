@@ -5,9 +5,11 @@
 This project is a multi-domain machine learning platform for cybersecurity, designed to train and deploy models across different domains such as:
 
 * Malware detection (static PE analysis – EMBER dataset)
-* Network anomaly detection (streaming via Spark + Kafka)
+* Network classification detection (streaming via Spark + Kafka)
 
 The system supports modular training pipelines and allows selecting which domain to train using a unified interface.
+
+The system also integrates a Retrieval-Augmented Generation (RAG) layer using Pinecone as a vector database to provide contextual validation and explanation for model decisions.
 
 ---
 ## System Demo
@@ -56,7 +58,7 @@ python run.py --mode <mode>
 
 | Mode     | Description                           |
 | -------- | ------------------------------------- |
-| networks | Train network anomaly detection model |
+| networks | Train network classification model    |
 | malwares | Train malware classification model    |
 | both     | Train both pipelines sequentially     |
 
@@ -328,177 +330,31 @@ s3://intrusion-ml-models/models/intrusion/<timestamp>
 models/intrusion/latest/model.joblib
 ```
 ---
-# Network Prediction API
-
-FastAPI service for real-time network traffic classification, inspired by firewall systems.
-
-### POST `/predict`
 ---
+## RAG Layer (Contextual Validation with Pinecone)
 
-# Examples (Execution Order)
+The system includes a Retrieval-Augmented Generation (RAG) component to enhance decision reliability.
 
-## 1. Normal Traffic (ML)
+Instead of relying solely on model predictions, the system retrieves similar historical flows from a Pinecone vector database to validate and enrich the prediction.
 
-### Request
+### How it works
 
-```json
-{
-  "sttl": 31,
-  "dttl": 29,
-  "ct_state_ttl": 0,
-  "dload": 500000
-}
-```
+1. Convert incoming network flow into an embedding
+2. Query Pinecone vector database (top-k similar flows)
+3. Retrieve similar attack patterns
+4. Use retrieved context to:
+   - Refine attack hypothesis
+   - Provide human-readable explanations
+   - Support decision confidence
 
-### Response
+### Why it matters
 
-```json
-{
-  "prediction": 0,
-  "ml_score": 0.0022239708341658115,
-  "decision": "ALLOW",
-  "decision_source": "ML",
-  "attack_hypothesis": [],
-  "reasons": []
-}
-```
+- Reduces uncertainty in attack classification  
+- Adds explainability beyond raw model output  
+- Mimics real analyst reasoning (compare with past incidents)
 
 ---
 
-## 2. Attack (ML)
-
-### Request
-
-```json
-{
-  "sttl": 254,
-  "dttl": 252,
-  "ct_state_ttl": 1,
-  "dbytes": 0
-}
-```
-
-### Response
-
-```json
-{
-  "prediction": 1,
-  "ml_score": 0.9312506318092346,
-  "decision": "BLOCK",
-  "decision_source": "ML",
-  "attack_hypothesis": [],
-  "reasons": []
-}
-```
-
----
-
-## 3. DoS Attack (RULE)
-
-### Request
-
-```json
-{
-  "spkts": 200,
-  "sload": 120000,
-  "sintpkt": 0.0005
-}
-```
-
-### Response
-
-```json
-{
-  "decision": "BLOCK",
-  "decision_source": "RULE",
-  "attack_hypothesis": ["DoS"],
-  "reasons": [
-    "High traffic rate that may overload the system."
-  ],
-  "explanations": [
-    "This rule is used to detect Denial of Service behavior. It looks for very high packet volume, high traffic load, and very short time between packets. Together, these signals may indicate an attempt to flood the target and reduce its availability."
-  ]
-}
-```
-
----
-
-## 4. Reconnaissance (RULE)
-
-### Request
-
-```json
-{
-  "spkts": 60,
-  "ct_src_dport_ltm": 5,
-  "sintpkt": 0.01
-}
-```
-
-### Response
-
-```json
-{
-  "decision": "ALERT",
-  "decision_source": "RULE",
-  "attack_hypothesis": ["Reconnaissance"],
-  "reasons": [
-    "Suspicious scanning behavior indicating reconnaissance activity."
-  ],
-  "explanations": [
-    "This rule detects reconnaissance activity such as port scanning or probing. It looks for a high number of packets sent, multiple destination ports, and short intervals between packets."
-  ]
-}
-```
----
-## Malware Prediction API
-
-### POST /malware/predict
-
-Classifies a file as malware or benign using static PE features.
-
-### Request
-
-```json
-{
-  "general.has_relocations": 1,
-  "general.imports": 120,
-  "general.size": 289344,
-  "strings.entropy": 5.8,
-  "strings.numstrings": 1200,
-  "header.coff.timestamp": 1588348800,
-  "header.optional.sizeof_code": 20480,
-  "header.optional.major_linker_version": 9
-}
-````
-
-### Response
-
-```json
-{
-  "prediction": 1,
-  "ml_score": 0.59,
-  "decision": "BLOCK",
-  "decision_source": "ML",
-  "shap_top_features": [
-    {
-      "feature": "general.has_resources",
-      "shap_value": 1.26,
-      "direction": "increase_risk"
-    }
-  ]
-}
-```
-
-### Notes
-
-* `prediction`: 1 = malware, 0 = benign
-* `ml_score`: probability
-* `decision`: final action (BLOCK / ALLOW)
-* `shap_top_features`: key features influencing the prediction
-
-```
----
 
 ## RAG - Seeding Vector Database (Pinecone)
 
@@ -688,7 +544,7 @@ Flow → ML (prediction + SHAP)
 
 ### Key Insight
 
-* **ML confidence is high (0.93) → strong anomaly signal**
+* **ML confidence is high (0.93) → strong classification signal**
 * **RAG similarity is low (~0.53) → weak historical support**
 
 → The system identifies:
@@ -704,3 +560,175 @@ Flow → ML (prediction + SHAP)
 * Adds **explainability + context** to every decision
 
 ---
+
+---
+# Network Prediction API
+
+FastAPI service for real-time network traffic classification, inspired by firewall systems.
+
+### POST `/predict`
+---
+
+# Examples (Execution Order)
+
+## 1. Normal Traffic (ML)
+
+### Request
+
+```json
+{
+  "sttl": 31,
+  "dttl": 29,
+  "ct_state_ttl": 0,
+  "dload": 500000
+}
+```
+
+### Response
+
+```json
+{
+  "prediction": 0,
+  "ml_score": 0.0022239708341658115,
+  "decision": "ALLOW",
+  "decision_source": "ML",
+  "attack_hypothesis": [],
+  "reasons": []
+}
+```
+
+---
+
+## 2. Attack (ML)
+
+### Request
+
+```json
+{
+  "sttl": 254,
+  "dttl": 252,
+  "ct_state_ttl": 1,
+  "dbytes": 0
+}
+```
+
+### Response
+
+```json
+{
+  "prediction": 1,
+  "ml_score": 0.9312506318092346,
+  "decision": "BLOCK",
+  "decision_source": "ML",
+  "attack_hypothesis": [],
+  "reasons": []
+}
+```
+
+---
+
+## 3. DoS Attack (RULE)
+
+### Request
+
+```json
+{
+  "spkts": 200,
+  "sload": 120000,
+  "sintpkt": 0.0005
+}
+```
+
+### Response
+
+```json
+{
+  "decision": "BLOCK",
+  "decision_source": "RULE",
+  "attack_hypothesis": ["DoS"],
+  "reasons": [
+    "High traffic rate that may overload the system."
+  ],
+  "explanations": [
+    "This rule is used to detect Denial of Service behavior. It looks for very high packet volume, high traffic load, and very short time between packets. Together, these signals may indicate an attempt to flood the target and reduce its availability."
+  ]
+}
+```
+
+---
+
+## 4. Reconnaissance (RULE)
+
+### Request
+
+```json
+{
+  "spkts": 60,
+  "ct_src_dport_ltm": 5,
+  "sintpkt": 0.01
+}
+```
+
+### Response
+
+```json
+{
+  "decision": "ALERT",
+  "decision_source": "RULE",
+  "attack_hypothesis": ["Reconnaissance"],
+  "reasons": [
+    "Suspicious scanning behavior indicating reconnaissance activity."
+  ],
+  "explanations": [
+    "This rule detects reconnaissance activity such as port scanning or probing. It looks for a high number of packets sent, multiple destination ports, and short intervals between packets."
+  ]
+}
+```
+---
+## Malware Prediction API
+
+### POST /malware/predict
+
+Classifies a file as malware or benign using static PE features.
+
+### Request
+
+```json
+{
+  "general.has_relocations": 1,
+  "general.imports": 120,
+  "general.size": 289344,
+  "strings.entropy": 5.8,
+  "strings.numstrings": 1200,
+  "header.coff.timestamp": 1588348800,
+  "header.optional.sizeof_code": 20480,
+  "header.optional.major_linker_version": 9
+}
+````
+
+### Response
+
+```json
+{
+  "prediction": 1,
+  "ml_score": 0.59,
+  "decision": "BLOCK",
+  "decision_source": "ML",
+  "shap_top_features": [
+    {
+      "feature": "general.has_resources",
+      "shap_value": 1.26,
+      "direction": "increase_risk"
+    }
+  ]
+}
+```
+
+### Notes
+
+* `prediction`: 1 = malware, 0 = benign
+* `ml_score`: probability
+* `decision`: final action (BLOCK / ALLOW)
+* `shap_top_features`: key features influencing the prediction
+
+```
