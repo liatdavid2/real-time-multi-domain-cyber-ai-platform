@@ -312,3 +312,52 @@ s3://intrusion-ml-models/models/intrusion/<timestamp>
 ```text
 models/intrusion/latest/model.joblib
 ```
+---
+
+## Malware Prediction API
+
+### POST /malware/predict
+
+Classifies a file as malware or benign using static PE features.
+
+### Request
+
+```json
+{
+  "general.has_relocations": 1,
+  "general.imports": 120,
+  "general.size": 289344,
+  "strings.entropy": 5.8,
+  "strings.numstrings": 1200,
+  "header.coff.timestamp": 1588348800,
+  "header.optional.sizeof_code": 20480,
+  "header.optional.major_linker_version": 9
+}
+````
+
+### Response
+
+```json
+{
+  "prediction": 1,
+  "ml_score": 0.59,
+  "decision": "BLOCK",
+  "decision_source": "ML",
+  "shap_top_features": [
+    {
+      "feature": "general.has_resources",
+      "shap_value": 1.26,
+      "direction": "increase_risk"
+    }
+  ]
+}
+```
+
+### Notes
+
+* `prediction`: 1 = malware, 0 = benign
+* `ml_score`: probability
+* `decision`: final action (BLOCK / ALLOW)
+* `shap_top_features`: key features influencing the prediction
+
+```
