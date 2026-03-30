@@ -27,6 +27,15 @@ At the end of the run, all experiments are logged to MLflow, and the best-perfor
 This demo shows the REST API usage via Swagger UI, including `/malware/predict` inference and real-time explanation with SHAP.
 
 [![Watch](docs/images/api-demo.png)](https://youtu.be/85oFoRoMe1c)
+
+---
+### RAG Demo (Swagger UI)
+
+This demo shows `/network/predict` inference with RAG-based context validation.
+When the model detects an attack with high confidence but is uncertain about the type, it retrieves similar past flows to infer the attack pattern.
+
+[![Watch](docs/images/rag-demo.png)](https://youtu.be/P7qIM-kIeJI)
+
 ---
 
 ## Key Idea
