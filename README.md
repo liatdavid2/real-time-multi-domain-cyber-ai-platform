@@ -313,7 +313,129 @@ s3://intrusion-ml-models/models/intrusion/<timestamp>
 models/intrusion/latest/model.joblib
 ```
 ---
+# Network Prediction API
 
+FastAPI service for real-time network traffic classification, inspired by firewall systems.
+
+### POST `/predict`
+---
+
+# Examples (Execution Order)
+
+## 1. Normal Traffic (ML)
+
+### Request
+
+```json
+{
+  "sttl": 31,
+  "dttl": 29,
+  "ct_state_ttl": 0,
+  "dload": 500000
+}
+```
+
+### Response
+
+```json
+{
+  "prediction": 0,
+  "ml_score": 0.0022239708341658115,
+  "decision": "ALLOW",
+  "decision_source": "ML",
+  "attack_hypothesis": [],
+  "reasons": []
+}
+```
+
+---
+
+## 2. Attack (ML)
+
+### Request
+
+```json
+{
+  "sttl": 254,
+  "dttl": 252,
+  "ct_state_ttl": 1,
+  "dbytes": 0
+}
+```
+
+### Response
+
+```json
+{
+  "prediction": 1,
+  "ml_score": 0.9312506318092346,
+  "decision": "BLOCK",
+  "decision_source": "ML",
+  "attack_hypothesis": [],
+  "reasons": []
+}
+```
+
+---
+
+## 3. DoS Attack (RULE)
+
+### Request
+
+```json
+{
+  "spkts": 200,
+  "sload": 120000,
+  "sintpkt": 0.0005
+}
+```
+
+### Response
+
+```json
+{
+  "decision": "BLOCK",
+  "decision_source": "RULE",
+  "attack_hypothesis": ["DoS"],
+  "reasons": [
+    "High traffic rate that may overload the system."
+  ],
+  "explanations": [
+    "This rule is used to detect Denial of Service behavior. It looks for very high packet volume, high traffic load, and very short time between packets. Together, these signals may indicate an attempt to flood the target and reduce its availability."
+  ]
+}
+```
+
+---
+
+## 4. Reconnaissance (RULE)
+
+### Request
+
+```json
+{
+  "spkts": 60,
+  "ct_src_dport_ltm": 5,
+  "sintpkt": 0.01
+}
+```
+
+### Response
+
+```json
+{
+  "decision": "ALERT",
+  "decision_source": "RULE",
+  "attack_hypothesis": ["Reconnaissance"],
+  "reasons": [
+    "Suspicious scanning behavior indicating reconnaissance activity."
+  ],
+  "explanations": [
+    "This rule detects reconnaissance activity such as port scanning or probing. It looks for a high number of packets sent, multiple destination ports, and short intervals between packets."
+  ]
+}
+```
+---
 ## Malware Prediction API
 
 ### POST /malware/predict
@@ -361,3 +483,4 @@ Classifies a file as malware or benign using static PE features.
 * `shap_top_features`: key features influencing the prediction
 
 ```
+
