@@ -354,7 +354,40 @@ Instead of relying solely on model predictions, the system retrieves similar his
 - Mimics real analyst reasoning (compare with past incidents)
 
 ---
+### Offline Pipeline (RAG Indexing)
 
+Raw Network Flows
+        ↓
+Feature Extraction
+        ↓
+Embedding Model (SentenceTransformer)
+        ↓
+Vector Representation (Dense Embeddings)
+        ↓
+Pinecone Vector DB (Index Storage)
+        ↓
+Ready for Retrieval
+---
+### Online Pipeline (RAG Inference)
+
+Incoming Flow (API)
+        ↓
+ML Model (Prediction + SHAP)
+        ↓
+Trigger RAG (if high-confidence attack)
+        ↓
+Build Query (from features + SHAP)
+        ↓
+Embedding Model
+        ↓
+Pinecone Search (Top-K = 3)
+        ↓
+Retrieve Similar Flows
+        ↓
+Similarity Analysis + Pattern Matching
+        ↓
+Final Decision + Explanation (ML + RAG)
+---
 
 ## RAG - Seeding Vector Database (Pinecone)
 
