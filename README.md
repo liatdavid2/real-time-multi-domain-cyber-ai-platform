@@ -489,4 +489,129 @@ Classifies a file as malware or benign using static PE features.
 * `shap_top_features`: key features influencing the prediction
 
 ```
+---
 
+## RAG-Based Context Validation
+
+The system enriches ML predictions with a **Retrieval-Augmented Generation (RAG)** layer that retrieves similar historical flows and explains the decision.
+
+RAG is triggered when:
+
+```text
+prediction = 1 AND ml_score > 0.8
+```
+
+---
+
+### Input
+
+```json
+{
+  "sttl": 254,
+  "dttl": 252,
+  "ct_state_ttl": 10,
+  "dbytes": 0
+}
+```
+
+---
+
+### Output
+
+```json
+{
+  "prediction": 1,
+  "ml_score": 0.9312506318092346,
+  "decision": "BLOCK",
+  "decision_source": "ML",
+  "attack_hypothesis": [
+    "reconnaissance"
+  ],
+  "matched_rules": [],
+  "reasons": [
+    "Similar reconnaissance flow: dur=9e-06, spkts=2.0, similarity=0.5352",
+    "Similar reconnaissance flow: dur=9e-06, spkts=2.0, similarity=0.5352",
+    "Similar reconnaissance flow: dur=9e-06, spkts=2.0, similarity=0.5352"
+  ],
+  "shap_top_features": [
+    {
+      "feature": "ct_state_ttl",
+      "value": 10,
+      "shap_value": 3.310762882232666,
+      "direction": "increase_risk"
+    },
+    {
+      "feature": "sttl",
+      "value": 254,
+      "shap_value": 3.190727710723877,
+      "direction": "increase_risk"
+    },
+    {
+      "feature": "ct_dst_ltm",
+      "value": 6.740434782608696,
+      "shap_value": -0.6148238778114319,
+      "direction": "decrease_risk"
+    },
+    {
+      "feature": "ct_src_ltm",
+      "value": 6.811739130434782,
+      "shap_value": -0.24214786291122437,
+      "direction": "decrease_risk"
+    },
+    {
+      "feature": "ct_src_dport_ltm",
+      "value": 3.727826086956522,
+      "shap_value": -0.22448688745498657,
+      "direction": "decrease_risk"
+    }
+  ],
+  "rag_query": "...",
+  "rag_context": [
+    {
+      "attack_label": "reconnaissance",
+      "dur": 0.000009,
+      "spkts": 2,
+      "similarity": 0.535
+    }
+  ],
+  "rag_analysis": {
+    "summary": "Decision BLOCK with weak supporting evidence.",
+    "avg_similarity": 0.535,
+    "confidence": "low"
+  },
+  "rag_support": "weak"
+}
+```
+
+---
+
+### How it works
+
+```text
+Flow → ML (prediction + SHAP)
+     → Build query from features
+     → Retrieve similar flows (Pinecone)
+     → Analyze similarity + attack patterns
+     → Attach contextual explanation
+```
+
+---
+
+### Key Insight
+
+* **ML confidence is high (0.93) → strong anomaly signal**
+* **RAG similarity is low (~0.53) → weak historical support**
+
+→ The system identifies:
+
+> **A likely attack with low similarity to known patterns (possible new / unseen attack)**
+
+---
+
+### Why this matters
+
+* Prevents blind trust in ML predictions
+* Distinguishes **known vs. novel attacks**
+* Adds **explainability + context** to every decision
+
+---
