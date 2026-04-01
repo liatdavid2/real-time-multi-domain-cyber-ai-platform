@@ -39,7 +39,7 @@ def load_feature_names():
     model, _ = load_model()
 
     # get production model info
-    versions = _client.get_latest_versions("intrusion_model", stages=["Production"])
+    versions = _client.get_latest_versions("networks_classification_model", stages=["Production"])
     model_info = versions[0]
 
     run_id = model_info.run_id
@@ -62,7 +62,7 @@ def build_features_from_json(data: dict):
 
     # load train stats
     stats_path = _client.download_artifacts(
-        _client.get_latest_versions("intrusion_model", stages=["Production"])[0].run_id,
+        _client.get_latest_versions("networks_classification_model", stages=["Production"])[0].run_id,
         "drift/train_stats.json"
     )
 

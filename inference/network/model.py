@@ -2,7 +2,7 @@ import threading
 import mlflow
 from mlflow.tracking import MlflowClient
 
-MODEL_NAME = "intrusion_model"
+MODEL_NAME = "networks_classification_model"
 MODEL_STAGE = "Production"
 
 _client = MlflowClient()
