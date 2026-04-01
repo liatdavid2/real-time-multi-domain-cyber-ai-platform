@@ -4,8 +4,8 @@
 
 This project is a multi-domain machine learning platform for cybersecurity, designed to train and deploy models across different domains such as:
 
-* Malware detection (static PE analysis – EMBER Dataset)
-* Network classification detection (streaming via Spark + Kafka - UNSW-NB15 Dataset)
+* Malware / not classification – EMBER Dataset
+* Network classification  (streaming via Spark + Kafka - UNSW-NB15 Dataset)
 
 The system supports modular training pipelines and allows selecting which domain to train using a unified interface.
 
