@@ -112,27 +112,6 @@ From the infrastructure folder:
 ```bash
 docker compose run training python run.py --mode malwares
 ```
-
----
-
-## Example Training Output
-
-```
-Mode selected: malwares
-Running MALWARES training...
-
-Loading data/ember_2017/ember_2017.jsonl
-Loaded samples: 15927
-
-Label distribution:
-1    10405
-0     5522
-
-Train shape: (11148, 22)
-Val shape: (2389, 22)
-Test shape: (2390, 22)
-```
-
 ---
 
 ## Model Performance
@@ -147,10 +126,9 @@ Precision: 0.92 | Recall: 0.88 | F1: 0.90
 Class 1 (Malware):
 Precision: 0.94 | Recall: 0.96 | F1: 0.95
 ```
-
 ---
 
-## Feature Importance (Top Signals)
+## Feature Importance - Malware
 
 ```
 Top 10 Most Important Features (XGBoost):
@@ -166,16 +144,40 @@ general.has_resources                          0.037
 general.imports                                0.031
 header.optional.minor_subsystem_version        0.030
 ```
+---
 
-### Interpretation
+## Key Insights (XGBoost + SHAP)
 
-These features reflect structural properties of PE files:
+From feature importance and SHAP analysis, we learned:
 
-* Debug flags → uncommon in production binaries
-* Imports/exports → behavioral signatures
-* Memory layout → low-level execution patterns
+* **has_debug** → absence increases risk (malware hides debug info)
+* **has_relocations** → presence decreases risk (legitimate, ASLR-friendly binaries)
+* **sizeof_heap_commit** → very small values increase risk, larger values indicate real applications
+* **exports** → few exports = suspicious, many = legitimate behavior
+* **imports** → low imports suggest minimal/hidden functionality → higher risk
+* **OS / subsystem versions** → outdated versions increase risk, modern versions reduce it
+* **has_resources** → absence increases risk (malware often strips resources)
+---
 
-The model learns meaningful signals aligned with real malware characteristics.
+## Example Insights
+
+### Malware Sample
+
+* No debug info
+* Few imports
+* Old OS version
+
+→ **High risk (BLOCK)**
+
+---
+
+### Benign Sample
+
+* Has debug info
+* Many imports/exports
+* Modern OS version
+
+→ **Low risk (ALLOW)**
 
 ---
 
