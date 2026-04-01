@@ -356,8 +356,9 @@ Instead of relying solely on model predictions, the system retrieves similar his
 - Mimics real analyst reasoning (compare with past incidents)
 
 ---
-### Offline Pipeline (RAG Indexing)
 
+### Offline Pipeline (RAG Indexing)
+```
 Raw Network Flows
         ↓
 Feature Extraction
@@ -369,9 +370,10 @@ Vector Representation (Dense Embeddings)
 Pinecone Vector DB (Index Storage)
         ↓
 Ready for Retrieval
+```
 ---
 ### Online Pipeline (RAG Inference)
-
+```
 Incoming Flow (API)
         ↓
 ML Model (Prediction + SHAP)
@@ -389,6 +391,7 @@ Retrieve Similar Flows
 Similarity Analysis + Pattern Matching
         ↓
 Final Decision + Explanation (ML + RAG)
+```
 ---
 
 ## RAG - Seeding Vector Database (Pinecone)
