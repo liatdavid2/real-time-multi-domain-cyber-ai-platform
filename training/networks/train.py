@@ -3,6 +3,7 @@ import os
 import time
 from pathlib import Path
 from typing import Any
+import time
 
 import joblib
 import mlflow
@@ -281,7 +282,8 @@ def register_and_promote_model(
 
 
 def main() -> None:
-    mlflow.set_tracking_uri("http://mlflow:5000")
+    total_start = time.time()
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000"))
     mlflow.set_experiment(MODEL_NAME)
 
     partition = os.getenv("TRAIN_PARTITION")
@@ -534,6 +536,7 @@ def main() -> None:
 
 
     print(f"Saved model to: {output_path}")
+    print(f"Total pipeline time: {time.time() - total_start:.2f} seconds")
 
 
 if __name__ == "__main__":

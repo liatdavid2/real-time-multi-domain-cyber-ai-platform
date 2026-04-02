@@ -15,4 +15,4 @@ COPY . .
 
 ENV GIT_PYTHON_REFRESH=quiet
 
-CMD ["bash"]
+ENTRYPOINT ["python", "run.py"]
