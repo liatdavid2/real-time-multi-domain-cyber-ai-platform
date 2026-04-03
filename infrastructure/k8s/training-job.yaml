@@ -10,6 +10,8 @@ spec:
           image: malware-trainer:latest
           imagePullPolicy: Never
 
+          args: ["--mode", "malwares"]
+
           env:
             - name: USE_S3_DATA
               value: "true"
@@ -21,6 +23,6 @@ spec:
               value: us-east-1
 
             - name: MLFLOW_TRACKING_URI
-              value: http://host.docker.internal:5000
+              value: http://mlflow:5000
 
       restartPolicy: Never
