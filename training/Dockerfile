@@ -4,14 +4,14 @@ WORKDIR /app
 
 ENV PYTHONPATH=/app
 
-# copy only requirements first (important!)
-COPY requirements.txt .
+# copy requirements
+COPY training/requirements.txt ./requirements.txt
 
-# install dependencies (cached unless requirements changed)
+# install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# copy rest of the code
-COPY . .
+# copy training code only (important!)
+COPY training/ .
 
 ENV GIT_PYTHON_REFRESH=quiet
 

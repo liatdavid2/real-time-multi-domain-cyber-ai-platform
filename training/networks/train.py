@@ -287,6 +287,7 @@ def main() -> None:
     mlflow.set_experiment(MODEL_NAME)
 
     partition = os.getenv("TRAIN_PARTITION")
+    print("USE_S3_DATA =", os.getenv("USE_S3_DATA"))
 
     df = load_data()
     validate_columns(df)
